@@ -24,7 +24,7 @@ object Instruction {
 
 object InstructionUsage {
   def main(args: Array[String]) = {
-    val targetField  = Field.variable("target").as[Int]
+    val targetField  = Field.mutable("target").as[Int]
     val sourceField  = Field.readOnly("intValue").as[Int]
     val accessExpr   = Expr.access(sourceField)
     val instructions = List(Instruction.assign(targetField, accessExpr))
