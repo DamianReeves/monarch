@@ -1,12 +1,20 @@
 package monarch
 
-sealed trait Instruction[-Accessed, +Changed]
+sealed trait Instruction[-Accessed, +Changed] { self =>
+  import Instruction.*
+  def debug: String =
+    self match {
+      case Assign(target, expr) =>
+        s"${target.key} := ${expr.debug}"
+    }
+}
 
 object Instruction {
-  def assign[A, Attribs, Target <: Field[A, Attribs], Accessed](
-    target: Target,
-    expr: Expr[A, Accessed]
-  ): Instruction[Accessed, Target] = Assign(target, expr)
+  import Field.Attribute
+
+  def assign[A, Attribs, Accessed](target: Field[A, Attribs], expr: Expr[A, Accessed])(implicit
+    ev: Attribs <:< Attribute.Assignable
+  ): Instruction[Accessed, Field[A, Attribs]] = Assign(target, expr)
 
   private[monarch] final case class Assign[A, Accessed, Assigned <: Field[A, ?]](
     target: Assigned,
@@ -15,8 +23,14 @@ object Instruction {
 }
 
 object InstructionUsage {
-  def example() = {
-    val targetField = Field.define("target").as[String]
-    ()
+  def main(args: Array[String]) = {
+    val targetField  = Field.variable("target").as[Int]
+    val sourceField  = Field.readOnly("intValue").as[Int]
+    val accessExpr   = Expr.access(sourceField)
+    val instructions = List(Instruction.assign(targetField, accessExpr))
+    //Instruction.assign(sourceField, Expr.access(targetField))
+    instructions.zipWithIndex.foreach { case (ins, idx) =>
+      println(f"[$idx%04d] ${ins.debug}")
+    }
   }
 }
