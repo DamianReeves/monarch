@@ -17,6 +17,8 @@ sealed trait Field[+A, +Attribs] extends Serializable { self =>
 
 object Field {
 
+  type Untyped = Field[?, ?]
+
   def immutable[K <: String & Singleton](key: K): ReadOnlyPartiallyApplied[K] = new ReadOnlyPartiallyApplied[K](key)
   def mutable[K <: String & Singleton](key: K): DefinePartiallyApplied[K]     = new DefinePartiallyApplied[K](key)
   def readOnly[K <: String & Singleton](key: K): ReadOnlyPartiallyApplied[K]  = new ReadOnlyPartiallyApplied[K](key)

@@ -4,4 +4,10 @@ package object monarch {
   }
 
   val DictField = Field
+
+  type ReadOnlyField[+A, +Attribs] = Field[A, Attribs & Field.Attribute.ReadOnly]
+  val ReadOnlyField = Field
+
+  type Variable[+A, +Attribs] = Field[A, Attribs & Field.Attribute.Assignable]
+  val Variable = Field
 }
