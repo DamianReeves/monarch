@@ -1,16 +1,16 @@
 package monarch
 
 sealed trait Field[+A, +Attribs] extends Serializable { self =>
-  import Field.*
+
   type Key <: String
   def key: Key
 
   def :=[A1 >: A, F](expr: Expr[A1, F])(implicit
-    ev: Attribs <:< Attribute.Assignable
+    ev: IsAssignable[Attribs]
   ): Instruction[F, Field[A1, Attribs]] = assign(expr)
 
   def assign[A1 >: A, F](expr: Expr[A1, F])(implicit
-    ev: Attribs <:< Attribute.Assignable
+    ev: IsAssignable[Attribs]
   ): Instruction[F, Field[A1, Attribs]] =
     Instruction.assign(self, expr)
 }

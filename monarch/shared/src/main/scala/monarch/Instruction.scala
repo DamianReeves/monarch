@@ -1,5 +1,7 @@
 package monarch
 
+import scala.annotation.implicitNotFound
+
 sealed trait Instruction[-Accessed, +Changed] { self =>
   import Instruction.*
   def debug: String =
@@ -10,10 +12,9 @@ sealed trait Instruction[-Accessed, +Changed] { self =>
 }
 
 object Instruction {
-  import Field.Attribute
 
   def assign[A, Attribs, Accessed](target: Field[A, Attribs], expr: Expr[A, Accessed])(implicit
-    ev: Attribs <:< Attribute.Assignable
+    ev: IsAssignable[Attribs]
   ): Instruction[Accessed, Field[A, Attribs]] = Assign(target, expr)
 
   private[monarch] final case class Assign[A, Accessed, Assigned <: Field[A, ?]](
@@ -34,3 +35,6 @@ object InstructionUsage {
     }
   }
 }
+
+
+
